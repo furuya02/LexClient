@@ -1,0 +1,40 @@
+div#logView {
+    background-color:rgb(131, 190, 245);
+    /* border: 1px solid #ccc; */
+    padding: 4px; 
+    width: 400px;
+    height: 500px;
+    overflow: scroll;
+}
+
+canvas#ringLight {
+    width: 408px;
+    height: 80px;
+    color: white;
+    font-weight:bold;
+}
+
+log {
+    margin: 4px;
+    padding: 4px;
+    border-radius: 4px;
+    min-width: 50%;
+    max-width: 85%;
+}
+
+log.req {
+    float: left;
+    background-color:white;
+}
+
+log.res {
+    text-align: right;
+    float: right;
+    background-color:beige;
+}
+
+log.err {
+    text-align: right;
+    float: right;
+    color: #f77;
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<head>
+
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.283.1.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="ring-light.js"></script>
+<script src="lex.js"></script>
+<script src="recorder.js"></script>
+<script src="silence-detection.js"></script>
+<script src="converter.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<html>
+<body>
+    <div id="logView"></div>
+    <canvas id="ringLight" width=408px onmouseup="recorder.stop()" onmousedown="recorder.start()"></canvas>
+</body>
+<script>
+const poolId = 'us-east-1:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx'
+const botName = 'OrderFlowers';
+const botAlias = '$LATEST';
+const lex = new Lex(botName, botAlias, poolId);
+const ringLight = new RingLight($('#ringLight'));
+
+const recorder = new Recorder();
+recorder.init();
+
+recorder.onStart = () => {
+  ringLight.start();
+}
+
+recorder.onStop = async (samples) => {
+  ringLight.stop();
+  const sampleRate = 16000; 
+  const buffer = Converter.downRate(samples, recorder.sampleRate, sampleRate);
+  const wav = Converter.createWav(buffer, sampleRate);
+
+  // Lexへの送信
+  const userId = 'UserId';
+  const data = await lex.postContent(new Blob([wav]), userId);
+
+  // テキストの表示
+  console.log(data);
+  appendLog(data.inputTranscript, 'req');
+  appendLog(data.message, 'res');
+
+  // レスポンスの再生
+  var audio = new Audio();
+  audio.src = window.URL.createObjectURL(new Blob([data.audioStream]));;
+  audio.play();
+}
+
+recorder.onData = volume => {
+  ringLight.level(volume);
+}
+
+function appendLog(message, className) {
+    $('<log>', { class:className, text:message }).appendTo('#logView');
+    $('#logView').scrollTop(self.innerHeight);
+}
+
+</script>
+</html>
