@@ -1,8 +1,3 @@
-//***************************************** */
-//  class Converter
-//  データ変換
-//***************************************** */
-
 class Converter {
     // サンプルレートを下げる
     static downRate(buffer, fromRate, toRate) {
